@@ -9,6 +9,8 @@
 #include <random>
 #include <time.h>
 #include <stdio.h>
+#include <cmath>
+#include <time.h>
 
 using namespace std;
 
@@ -24,9 +26,9 @@ public:
 	char **fullgrid;
 
 	void build_grid();
-	void init();
 	void print();
-	void update_agent();
+	void human_update_agent();
+	void autosolve_update_agent();
 	void clear();
 
 
@@ -38,10 +40,6 @@ void grid::build_grid() {
 	for (int i = 0; i < xGS; i++) {
 		fullgrid[i] = new char[yGS];
 	}
-}
-
-void grid::init() {
-	
 }
 
 void grid::print() {
@@ -68,7 +66,7 @@ void grid::print() {
 	}
 }
 
-void grid::update_agent() {
+void grid::human_update_agent() {
 	if (action == 'u') {
 		if (Ax > xGS || Ax <= 0) {
 			cout << "Invalid Move\n";
@@ -103,6 +101,19 @@ void grid::update_agent() {
 	}
 }
 
+void grid::autosolve_update_agent() {
+	if (Ax < Gx) {
+		Ax += 1;
+	}
+	else if (Ax > Gx) {
+		Ax -= 1;
+	}
+	else if (Ay < Gy) {
+		Ay += 1;
+	}
+	else if (Ay > Gy)
+		Ay -= 1; 
+}
 
 void grid::clear() {
 	delete[] fullgrid;
@@ -111,7 +122,6 @@ void grid::clear() {
 int main() {
 	grid G;
 	G.build_grid(); //build grid array
-	G.init(); //place A and G in random locations and fill grid array
 	int gameplay = 0; //variable for selecting gameplay option
 	cout << "Select a Gameplay Option:\n1.Human Controlled\n2.Autosolve" << endl;
 	cin >> gameplay;
@@ -126,11 +136,23 @@ int main() {
 			else {
 				cout << "Choose a direction to move the agent.\nEnter U for up, D for down, R for Right, or L for left\n";
 				cin >> G.action;
-				G.update_agent();
+				G.human_update_agent();
 			}
 		}
 	}
 	else if (gameplay == 2) {
+		bool status2 = true;
+		int cont = 0;
+		while (status2 == true) {
+			if (G.Ax == G.Gx && G.Ay == G.Gy) {
+				cout << "PUZZLE SOLVED\n";
+				status2 = false;
+			}
+			else {
+				G.autosolve_update_agent();
+				G.print();
+			}
+		}
 
 	}
 		
