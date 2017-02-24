@@ -130,32 +130,30 @@ int main() {
 		while (gamestatus == true) {
 			G.print();
 			if (G.Ax == G.Gx && G.Ay == G.Gy) {
-				cout << "WINNER!!\n";
+				cout << "WINNER!!\n"; //if the agent and the goal are in the same location the user has won
 				gamestatus = false;
 			}
 			else {
 				cout << "Choose a direction to move the agent.\nEnter U for up, D for down, R for Right, or L for left\n";
-				cin >> G.action;
-				G.human_update_agent();
+				cin >> G.action; //take user input for action
+				G.human_update_agent(); //move agent according to user input
 			}
 		}
 	}
 	else if (gameplay == 2) {
-		bool status2 = true;
-		int cont = 0;
+		bool status2 = true; //while loop condition
 		while (status2 == true) {
 			if (G.Ax == G.Gx && G.Ay == G.Gy) {
-				cout << "PUZZLE SOLVED\n";
-				status2 = false;
+				cout << "PUZZLE SOLVED\n"; // if the agent and the goal are in the same location the puzzle is solved
+				status2 = false; //loop exit
 			}
 			else {
-				G.autosolve_update_agent();
-				G.print();
+				G.autosolve_update_agent(); //move agent logically towards goal
+				G.print(); 
 			}
 		}
-
 	}
 		
-	G.clear();
+	G.clear(); //help clear up memory
 	return 0;
 }
