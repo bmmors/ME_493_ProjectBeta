@@ -23,7 +23,7 @@ public:
 
 	char **fullgrid;
 
-	grid(const int x, const int y);
+	grid(int x,int y);
 	void init();
 	void print();
 	void update_agent();
@@ -50,13 +50,13 @@ void grid::init() {
 	for (int i = 0; i < xGS; i++) {
 		for (int j = 0; j < yGS; j++) {
 			if (i == Ax && j == Ay) {
-				fullgrid[i][j] = "A";
+				fullgrid[i][j] = 'A';
 			}
 			else if (i == Gx && j == Gy) {
-				fullgrid[i][j] = "G";
+				fullgrid[i][j] = 'G';
 			}
 			else {
-				fullgrid[i][j] = "-";
+				fullgrid[i][j] = '-';
 			}
 			
 		}
