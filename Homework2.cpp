@@ -24,11 +24,16 @@ public:
 	int Gy = rand() % yGS;
 	char action = 'a';
 	char **fullgrid;
+	bool Test_B = false; //Test B test variable false unless test passes
+	bool Test_C = false; //Test C test variable false unless test passes
 
 	void build_grid();
 	void print();
 	void human_update_agent();
 	void autosolve_update_agent();
+	void TestA();
+	void TestB();
+	void TestC();
 	void clear();
 
 
@@ -76,7 +81,7 @@ void grid::human_update_agent() {
 		}
 	}
 	else if (action == 'd') {
-		if (Ax > xGS || Ax <= 0) {
+		if (Ax >= xGS-1 || Ax < 0) {
 			cout << "Invalid Move\n";
 		}
 		else {
@@ -84,7 +89,7 @@ void grid::human_update_agent() {
 		}
 	}
 	else if (action == 'r') {
-		if (Ay > yGS || Ay <= 0) {
+		if (Ay >= yGS-1 || Ay < 0) {
 			cout << "Invalid Move\n";
 		}
 		else {
@@ -115,6 +120,25 @@ void grid::autosolve_update_agent() {
 		Ay -= 1; 
 }
 
+void grid::TestA() {
+	for (int i = 0; i < 11; i++) {
+		action = 'u';
+		human_update_agent();
+	}
+	assert(Ax == 0);
+	cout << "Test A Passed" << endl;
+}
+
+void grid::TestB() {
+	assert(Test_B == true);
+	cout << "Test B Passed" << endl;
+}
+
+void grid::TestC() {
+	assert(Test_C == true);
+	cout << "Test C Passed" << endl;
+}
+
 void grid::clear() {
 	delete[] fullgrid;
 }
@@ -132,6 +156,7 @@ int main() {
 			if (G.Ax == G.Gx && G.Ay == G.Gy) {
 				cout << "WINNER!!\n"; //if the agent and the goal are in the same location the user has won
 				gamestatus = false;
+				G.Test_B = true;
 			}
 			else {
 				cout << "Choose a direction to move the agent.\nEnter U for up, D for down, R for Right, or L for left\n";
@@ -139,6 +164,7 @@ int main() {
 				G.human_update_agent(); //move agent according to user input
 			}
 		}
+		G.TestB();
 	}
 	else if (gameplay == 2) {
 		bool status2 = true; //while loop condition
@@ -146,14 +172,16 @@ int main() {
 			if (G.Ax == G.Gx && G.Ay == G.Gy) {
 				cout << "PUZZLE SOLVED\n"; // if the agent and the goal are in the same location the puzzle is solved
 				status2 = false; //loop exit
+				G.Test_C = true;
 			}
 			else {
 				G.autosolve_update_agent(); //move agent logically towards goal
 				G.print(); 
 			}
 		}
+		G.TestC();
 	}
-		
+	G.TestA();
 	G.clear(); //help clear up memory
 	return 0;
 }
