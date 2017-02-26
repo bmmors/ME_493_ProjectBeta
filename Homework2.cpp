@@ -24,8 +24,6 @@ public:
 	int Gy = rand() % yGS;
 	char action = 'a';
 	char **fullgrid;
-	bool Test_B = false; //Test B test variable false unless test passes
-	bool Test_C = false; //Test C test variable false unless test passes
 
 	void build_grid();
 	void print();
@@ -74,7 +72,7 @@ void grid::print() {
 void grid::human_update_agent() {
 	if (action == 'u') {
 		if (Ax > xGS || Ax <= 0) {
-			cout << "Invalid Move\n";
+			cout << ".";
 		}
 		else {
 			Ax -= 1;
@@ -130,12 +128,14 @@ void grid::TestA() {
 }
 
 void grid::TestB() {
-	assert(Test_B == true);
+	assert(Ax == Gx);
+	assert(Ay == Gy);
 	cout << "Test B Passed" << endl;
 }
 
 void grid::TestC() {
-	assert(Test_C == true);
+	assert(Ax == Gx);
+	assert(Ay == Gy);
 	cout << "Test C Passed" << endl;
 }
 
@@ -144,6 +144,7 @@ void grid::clear() {
 }
 
 int main() {
+	srand(time(NULL));
 	grid G;
 	G.build_grid(); //build grid array
 	int gameplay = 0; //variable for selecting gameplay option
@@ -155,8 +156,7 @@ int main() {
 			G.print();
 			if (G.Ax == G.Gx && G.Ay == G.Gy) {
 				cout << "WINNER!!\n"; //if the agent and the goal are in the same location the user has won
-				gamestatus = false;
-				G.Test_B = true;
+				gamestatus = false; //exit loop
 			}
 			else {
 				cout << "Choose a direction to move the agent.\nEnter U for up, D for down, R for Right, or L for left\n";
@@ -172,7 +172,6 @@ int main() {
 			if (G.Ax == G.Gx && G.Ay == G.Gy) {
 				cout << "PUZZLE SOLVED\n"; // if the agent and the goal are in the same location the puzzle is solved
 				status2 = false; //loop exit
-				G.Test_C = true;
 			}
 			else {
 				G.autosolve_update_agent(); //move agent logically towards goal
