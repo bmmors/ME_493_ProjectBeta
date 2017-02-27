@@ -119,7 +119,7 @@ void grid::autosolve_update_agent() {
 }
 
 void grid::TestA() {
-	for (int i = 0; i < 11; i++) {
+	for (int i = 0; i < xGS + 1; i++) {
 		action = 'u';
 		human_update_agent();
 	}
