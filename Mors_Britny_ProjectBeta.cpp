@@ -175,6 +175,5 @@ int main() {
 			Q.react(A.ax, A.ay, G.xGS);
 		}
 
-	
 	return 0;
 }
