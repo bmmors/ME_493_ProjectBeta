@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <cmath>
 #include <time.h>
+#include <fstream>
 
 using namespace std;
 
@@ -29,8 +30,8 @@ class agent {
 public:
 	int Ax_start = 1;
 	int Ay_start = 2;
-	int ax;
-	int ay;
+	int ax=0;
+	int ay=0;
 	int action;
 	int state;
 
@@ -96,7 +97,7 @@ void agent::update(int move, int gridx, int gridy) {
 
 void qlearner::init(int gridx, int gridy, int goalx, int goaly) {
 	//build reward table
-	for (int i = 0; i < (gridx); i++) {
+	for (int i = 0; i < gridx; i++) {
 		vector<int> rrow;
 		for (int j = 0; j < gridy; j++) {
 			if (i == goalx && j == goaly) {
@@ -108,33 +109,48 @@ void qlearner::init(int gridx, int gridy, int goalx, int goaly) {
 		}
 		rtable.push_back(rrow);
 	}
-	//build qtable
-	for (int i = 0; i < (gridx); i++) {
-		vector<double> qrow;
+	/*for (int i = 0; i < gridx; i++) {
 		for (int j = 0; j < gridy; j++) {
+			cout << rtable[i][j] << "\t";
+		}
+		cout << endl;
+	}
+	*/
+	//build qtable
+	for (int i = 0; i < (gridx*gridy); i++) {
+		vector<double> qrow;
+		for (int j = 0; j < 4; j++) {
 			qrow.push_back(LYRAND);
 		}
 		qtable.push_back(qrow);
 	}
+	for (int i = 0; i < gridx*gridy; i++) {
+		for (int j = 0; j < 4; j++) {
+			cout << qtable[i][j] << "\t";
+		}
+		cout << endl;
+	}
+	
 }
 
 void qlearner::sense(int agentx, int agenty,int x_dim) {
 	state = agentx + (agenty*x_dim);
 	reward = rtable[agentx][agenty];
 }
-
 void qlearner::decide() {
 	epsilon = LYRAND;
 	if (epsilon <= 0.1) {
 		action = rand() % 4; //random option
+		cout << "Random action:	" << action << endl;
 	}
 	else {
-		int test = qtable[state][0];
-		action = 0;
+		int test = qtable[state][0]; //set test variable to the  first qvalue that corresponds with the agents current state
+		cout << "Qtable:	" << qtable[state][0] << endl;
+		action = 0; //start the search at zero 
 		for (int i = 0; i < 4; i++) {
 			if (test < qtable[state][i]) {
-				action = i;
-				test = qtable[state][i];
+				action = i; //if the next qvalue is greater set the action to that number
+				test = qtable[state][i]; //set the new test variable with the corresponding qvalue
 			}
 		}
 	}
@@ -163,17 +179,30 @@ void qlearner::react(int agentx, int agenty, int x_dim) {
 }
 
 int main() {
+	srand(time(NULL));
 	grid G;
 	agent A;
 	qlearner Q;
-	Q.init(G.xGS,G.yGS,G.Gx,G.Gy);
-	for (int i=0; i < 30; i++)
-		for (int j = 0; j < 1000; j++) {
+	Q.init(G.xGS, G.yGS, G.Gx, G.Gy);
+	//for (int i = 0; i < 30; i++){
+		//for (int j = 0; j < 1000; j++) {
 			Q.sense(A.ax, A.ay, G.xGS);
 			Q.decide();
-			A.update(Q.act(), G.xGS, G.yGS);
-			Q.react(A.ax, A.ay, G.xGS);
+			//A.update(Q.act(), G.xGS, G.yGS);
+			//Q.react(A.ax, A.ay, G.xGS);
+		//}
+	//}	
+	
+	/*ofstream myfile;
+	myfile.open("Qtable.csv");
+	myfile.clear();
+	for (int i = 0; i < G.xGS*G.yGS; i++) {
+		for (int j = 0; j < 4; j++) {
+			//myfile << Q.qtable[i][j] << ',';
 		}
-
+		//myfile << endl;
+	}
+	myfile.close();
+	*/
 	return 0;
 }
