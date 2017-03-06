@@ -60,39 +60,15 @@ public:
 };
 
 void agent::update(int move, int gridx, int gridy) {
-	if (move == 0) {
-		if (ax > gridx || ax <= 0) {
-			ax = ax;
-		}
-		else {
-			ax -= 1;
-		}
-	}
-	else if (move == 1) {
-		if (ax >= gridx-1 || ax < 0) {
-			ax = ax;
-		}
-		else {
-			ax += 1;
-		}
-
-	}
-	else if (move == 2) {
-		if (ay > gridx || ax <= 0) {
-			ay = ay;
-		}
-		else {
-			ay -= 1;
-		}
-	}
-	else if (move == 3) {
-		if (ay >= gridx - 1 || ay < 0) {
-			ay = ay;
-		}
-		else {
-			ay += 1;
-		}
-	}
+	if (move == 0) { ax -= 1; }
+	else if (move == 1) { ax += 1; }
+	else if (move == 2) { ay -= 1; }
+	else if (move == 3) { ay += 1; }
+	
+	while (ax < 0) { ax += 1; }
+	while (ay < 0) { ay += 1; }
+	while (ax > gridx) { ax -= 1; }
+	while (ay > gridy) { ay -= 1; }
 }
 
 void qlearner::init(int gridx, int gridy, int goalx, int goaly) {
@@ -137,6 +113,7 @@ void qlearner::sense(int agentx, int agenty,int x_dim) {
 	state = agentx + (agenty*x_dim);
 	reward = rtable[agentx][agenty];
 }
+
 void qlearner::decide() {
 	epsilon = LYRAND;
 	if (epsilon <= 0.1) {
@@ -188,7 +165,7 @@ int main() {
 		//for (int j = 0; j < 1000; j++) {
 			Q.sense(A.ax, A.ay, G.xGS);
 			Q.decide();
-			//A.update(Q.act(), G.xGS, G.yGS);
+			A.update(Q.act(), G.xGS, G.yGS);
 			//Q.react(A.ax, A.ay, G.xGS);
 		//}
 	//}	
