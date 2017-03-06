@@ -19,10 +19,10 @@ using namespace std;
 
 class grid {
 public:
-	int xGS = 2; //set x value for grid size
-	int yGS = 3; //set y calue for grid size
-	int Gx = 1;//rand() % xGS;
-	int Gy = 1;//rand() % yGS;
+	int xGS = 10; //set x value for grid size
+	int yGS = xGS; //set y value for grid size
+	int Gx = xGS-1;//rand() % xGS;
+	int Gy = yGS-1;//rand() % yGS;
 
 };
 
@@ -68,18 +68,18 @@ void agent::reset(int check) {
 }
 
 void agent::init(int xGS, int yGS) {
-	Ax_start = rand() % xGS;
-	Ay_start = rand() % yGS;
+	Ax_start = 0;//rand() % xGS;
+	Ay_start = 0;//rand() % yGS;
 	ax = Ax_start;
 	ay = Ay_start;
 }
 
 void agent::update(int move, int gridx, int gridy) {
 	//cout << "Action:	" << move << endl;
-	if (move == 0) { ax -= 1; }
-	else if (move == 1) { ax += 1; }
-	else if (move == 2) { ay -= 1; }
-	else if (move == 3) { ay += 1; }
+	if (move == 0) { ay -= 1; }
+	else if (move == 1) { ay += 1; }
+	else if (move == 2) { ax += 1; }
+	else if (move == 3) { ax -= 1; }
 	//cout << "A:(" << ax << "," << ay << ")" << endl;
 	while (ax < 0) { ax += 1; }
 	while (ay < 0) { ay += 1; }
@@ -90,9 +90,9 @@ void agent::update(int move, int gridx, int gridy) {
 
 void qlearner::init(int gridx, int gridy, int goalx, int goaly) {
 	//build reward table
-	for (int i = 0; i < gridx; i++) {
+	for (int i = 0; i < gridy; i++) {
 		vector<int> rrow;
-		for (int j = 0; j < gridy; j++) {
+		for (int j = 0; j < gridx; j++) {
 			if (i == goalx && j == goaly) {
 				rrow.push_back(100);
 			}
@@ -102,13 +102,16 @@ void qlearner::init(int gridx, int gridy, int goalx, int goaly) {
 		}
 		rtable.push_back(rrow);
 	}
-	/*for (int i = 0; i < gridx; i++) {
-		for (int j = 0; j < gridy; j++) {
+	/*
+	cout << "Reward Table" << endl;
+	for (int i = 0; i < gridy; i++) {
+		for (int j = 0; j < gridx; j++) {
 			cout << rtable[i][j] << "\t";
 		}
 		cout << endl;
 	}
 	*/
+	
 	//build qtable
 	for (int i = 0; i < (gridx*gridy); i++) {
 		vector<double> qrow;
@@ -116,11 +119,11 @@ void qlearner::init(int gridx, int gridy, int goalx, int goaly) {
 			qrow.push_back(LYRAND);
 		}
 		qtable.push_back(qrow);
-	}
-	/*
+	}/*
+	cout << "Q Table BEFORE" << endl;
 	for (int i = 0; i < gridx*gridy; i++) {
 		for (int j = 0; j < 4; j++) {
-			cout << qtable[i][j] << "\t";
+			cout << qtable[i][j] << "	";
 		}
 		cout << endl;
 	}
@@ -129,8 +132,7 @@ void qlearner::init(int gridx, int gridy, int goalx, int goaly) {
 
 void qlearner::sense(int agentx, int agenty,int x_dim) {
 	state = agentx + (agenty*x_dim);
-	reward = rtable[agentx][agenty];
-	cout << reward << endl;
+	//cout << reward << endl;
 }
 
 void qlearner::decide() {
@@ -138,17 +140,21 @@ void qlearner::decide() {
 	if (epsilon <= 0.1) {
 		action = rand() % 4; //random option
 		//cout << "Random action:	" << action << endl;
+		//cout << "R: ";
 	}
 	else {
-		int test = qtable[state][0]; //set test variable to the  first qvalue that corresponds with the agents current state
+		//cout << "G: ";
+		//int test = qtable[state][0]; //set test variable to the  first qvalue that corresponds with the agents current state
 		//cout << "Qtable:	" << qtable[state][0] << endl;
 		action = 0; //start the search at zero 
-		for (int i = 0; i < 4; i++) {
-			if (test < qtable[state][i]) {
+		for (int i = 1; i < 4; i++) {
+			//cout << action << "..";
+			if (qtable[state][action] < qtable[state][i]) {
 				action = i; //if the next qvalue is greater set the action to that number
-				test = qtable[state][i]; //set the new test variable with the corresponding qvalue
+				//test = qtable[state][i]; //set the new test variable with the corresponding qvalue
 			}
 		}
+		//cout << action << endl;
 	}
 }
 
@@ -163,15 +169,18 @@ int qlearner::act() {
 }
 
 void qlearner::react(int agentx, int agenty, int x_dim) {
+	reward = rtable[agenty][agentx];
 	newstate = agentx + (agenty*x_dim);
 	int w = qtable[newstate][0]; //save first int in vector
-	for (int i = 0; i < 4; i++) {
+	//printf("%2d %2d %2d\n", state, action, newstate);
+	for (int i = 1; i < 4; i++) {
 		if (w < qtable[newstate][i]) {
 			Qmax = qtable[newstate][i]; //save the new max value in qmax
 			w = qtable[newstate][i]; //reset w with higest number
 		}
-		qtable[newstate][action] = Qval + alpha*(reward + (gamma*Qmax) - Qval);
 	}
+	//printf("\nValues: %f, %f, %d, %f, %f\n\n", Qval, alpha, reward, gamma, Qmax);
+	qtable[state][action] = Qval + alpha*(reward + (gamma*Qmax) - Qval);
 }
 
 int qlearner::check() {
@@ -186,11 +195,10 @@ int main() {
 	grid G;
 	agent A;
 	qlearner Q;
-	Q.init(G.xGS, G.yGS, G.Gx, G.Gy);
 	A.init(G.xGS,G.yGS);
 	bool broke = false;
 	int n = 1000;
-	int run = 30;
+	int run = 1;
 	int time[1000];
 	for (int i = 0; i < n; i++) {
 		time[i] = 0;
@@ -204,16 +212,25 @@ int main() {
 				Q.decide();
 				A.update(Q.act(), G.xGS, G.yGS);
 				Q.react(A.ax, A.ay, G.xGS);
-				if (Q.reward == 100) {
+				if (A.ax == G.Gx && A.ay == G.Gy) {
 					broke = true;
 				}
 				time[j]++;
-				A.reset(0);
 			}
+			A.reset(0);
 			broke = false;
+			//cout << j << endl;
 		}
 	}
-	
+	/*
+	cout << "Q table AFTER" << endl;
+	for (int i = 0; i < G.xGS*G.yGS; i++) {
+		for (int j = 0; j < 4; j++) {
+			cout << Q.qtable[i][j] << "\t";
+		}
+		cout << endl;
+	}
+	*/
 	ofstream myfile;
 	myfile.open("Qtable.csv");
 	myfile.clear();
