@@ -60,15 +60,17 @@ public:
 };
 
 void agent::update(int move, int gridx, int gridy) {
+	cout << "Action:	" << move << endl;
 	if (move == 0) { ax -= 1; }
 	else if (move == 1) { ax += 1; }
 	else if (move == 2) { ay -= 1; }
 	else if (move == 3) { ay += 1; }
-	
+	cout << "A:(" << ax << "," << ay << ")" << endl;
 	while (ax < 0) { ax += 1; }
 	while (ay < 0) { ay += 1; }
-	while (ax > gridx) { ax -= 1; }
-	while (ay > gridy) { ay -= 1; }
+	while (ax >= gridx) { ax -= 1; }
+	while (ay >= gridy) { ay -= 1; }
+	cout << "A:(" << ax << "," << ay << ")" << endl;
 }
 
 void qlearner::init(int gridx, int gridy, int goalx, int goaly) {
@@ -118,11 +120,11 @@ void qlearner::decide() {
 	epsilon = LYRAND;
 	if (epsilon <= 0.1) {
 		action = rand() % 4; //random option
-		cout << "Random action:	" << action << endl;
+		//cout << "Random action:	" << action << endl;
 	}
 	else {
 		int test = qtable[state][0]; //set test variable to the  first qvalue that corresponds with the agents current state
-		cout << "Qtable:	" << qtable[state][0] << endl;
+		//cout << "Qtable:	" << qtable[state][0] << endl;
 		action = 0; //start the search at zero 
 		for (int i = 0; i < 4; i++) {
 			if (test < qtable[state][i]) {
@@ -162,13 +164,13 @@ int main() {
 	qlearner Q;
 	Q.init(G.xGS, G.yGS, G.Gx, G.Gy);
 	//for (int i = 0; i < 30; i++){
-		//for (int j = 0; j < 1000; j++) {
+		for (int j = 0; j < 10; j++) {
 			Q.sense(A.ax, A.ay, G.xGS);
 			Q.decide();
 			A.update(Q.act(), G.xGS, G.yGS);
 			//Q.react(A.ax, A.ay, G.xGS);
-		//}
-	//}	
+		}
+	//}
 	
 	/*ofstream myfile;
 	myfile.open("Qtable.csv");
