@@ -21,21 +21,21 @@ class grid {
 public:
 	int xGS = 2; //set x value for grid size
 	int yGS = 3; //set y calue for grid size
-	int Gx = 0;//rand() % xGS;
+	int Gx = 1;//rand() % xGS;
 	int Gy = 1;//rand() % yGS;
 
 };
 
 class agent {
 public:
-	int Ax_start = 1;
-	int Ay_start = 2;
-	int ax=0;
-	int ay=0;
-	int action;
-	int state;
+	int Ax_start;
+	int Ay_start;
+	int ax;
+	int ay;
 
+	void init(int xGS, int yGS);
 	void update(int move, int gridx, int gridy);
+	void reset(int check);
 };
 
 class qlearner {
@@ -56,21 +56,36 @@ public:
 	void decide();
 	int act();
 	void react(int agentx, int agenty, int x_dim);
+	int check();
 
 };
 
+void agent::reset(int check) {
+	if (check == 0) {
+		ax = Ax_start;
+		ay = Ay_start;
+	}
+}
+
+void agent::init(int xGS, int yGS) {
+	Ax_start = rand() % xGS;
+	Ay_start = rand() % yGS;
+	ax = Ax_start;
+	ay = Ay_start;
+}
+
 void agent::update(int move, int gridx, int gridy) {
-	cout << "Action:	" << move << endl;
+	//cout << "Action:	" << move << endl;
 	if (move == 0) { ax -= 1; }
 	else if (move == 1) { ax += 1; }
 	else if (move == 2) { ay -= 1; }
 	else if (move == 3) { ay += 1; }
-	cout << "A:(" << ax << "," << ay << ")" << endl;
+	//cout << "A:(" << ax << "," << ay << ")" << endl;
 	while (ax < 0) { ax += 1; }
 	while (ay < 0) { ay += 1; }
 	while (ax >= gridx) { ax -= 1; }
 	while (ay >= gridy) { ay -= 1; }
-	cout << "A:(" << ax << "," << ay << ")" << endl;
+	//cout << "A:(" << ax << "," << ay << ")" << endl;
 }
 
 void qlearner::init(int gridx, int gridy, int goalx, int goaly) {
@@ -102,18 +117,20 @@ void qlearner::init(int gridx, int gridy, int goalx, int goaly) {
 		}
 		qtable.push_back(qrow);
 	}
+	/*
 	for (int i = 0; i < gridx*gridy; i++) {
 		for (int j = 0; j < 4; j++) {
 			cout << qtable[i][j] << "\t";
 		}
 		cout << endl;
 	}
-	
+	*/
 }
 
 void qlearner::sense(int agentx, int agenty,int x_dim) {
 	state = agentx + (agenty*x_dim);
 	reward = rtable[agentx][agenty];
+	cout << reward << endl;
 }
 
 void qlearner::decide() {
@@ -157,31 +174,53 @@ void qlearner::react(int agentx, int agenty, int x_dim) {
 	}
 }
 
+int qlearner::check() {
+	if (reward == 100) {
+		return 0;
+	}
+	else { return 1; }
+}
+
 int main() {
 	srand(time(NULL));
 	grid G;
 	agent A;
 	qlearner Q;
 	Q.init(G.xGS, G.yGS, G.Gx, G.Gy);
-	//for (int i = 0; i < 30; i++){
-		for (int j = 0; j < 10; j++) {
-			Q.sense(A.ax, A.ay, G.xGS);
-			Q.decide();
-			A.update(Q.act(), G.xGS, G.yGS);
-			//Q.react(A.ax, A.ay, G.xGS);
+	A.init(G.xGS,G.yGS);
+	bool broke = false;
+	int n = 1000;
+	int run = 30;
+	int time[1000];
+	for (int i = 0; i < n; i++) {
+		time[i] = 0;
+	}
+	for (int i = 0; i < run; i++){
+		Q.qtable.clear();
+		Q.init(G.xGS, G.yGS, G.Gx, G.Gy);
+		for (int j = 0; j < n; j++) {
+			while (!broke) {
+				Q.sense(A.ax, A.ay, G.xGS);
+				Q.decide();
+				A.update(Q.act(), G.xGS, G.yGS);
+				Q.react(A.ax, A.ay, G.xGS);
+				if (Q.reward == 100) {
+					broke = true;
+				}
+				time[j]++;
+				A.reset(0);
+			}
+			broke = false;
 		}
-	//}
+	}
 	
-	/*ofstream myfile;
+	ofstream myfile;
 	myfile.open("Qtable.csv");
 	myfile.clear();
-	for (int i = 0; i < G.xGS*G.yGS; i++) {
-		for (int j = 0; j < 4; j++) {
-			//myfile << Q.qtable[i][j] << ',';
-		}
-		//myfile << endl;
+	for (int i = 0; i < n; i++) {
+		myfile << time[i] << endl;
 	}
 	myfile.close();
-	*/
+
 	return 0;
 }
