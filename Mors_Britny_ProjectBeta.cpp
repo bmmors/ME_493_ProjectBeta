@@ -57,6 +57,7 @@ public:
 	int act();
 	void react(int agentx, int agenty, int x_dim);
 	int check();
+	void testD();
 
 };
 
@@ -183,11 +184,12 @@ void qlearner::react(int agentx, int agenty, int x_dim) {
 	qtable[state][action] = Qval + alpha*(reward + (gamma*Qmax) - Qval);
 }
 
-int qlearner::check() {
-	if (reward == 100) {
-		return 0;
+void qlearner::testD() {
+	for (int i = 0; i < qtable.size(); i++) {
+		for (int j = 0; j < 4; j++) {
+			assert(qtable[i][j] != 100);
+		}
 	}
-	else { return 1; }
 }
 
 int main() {
@@ -204,6 +206,7 @@ int main() {
 		time[i] = 0;
 	}
 	for (int i = 0; i < run; i++){
+		Q.testD();
 		Q.qtable.clear();
 		Q.init(G.xGS, G.yGS, G.Gx, G.Gy);
 		for (int j = 0; j < n; j++) {
