@@ -24,6 +24,8 @@ public:
 	int Gx = xGS-2;//rand() % xGS;
 	int Gy = yGS-2;//rand() % yGS;
 
+	void testF();
+
 };
 
 class agent {
@@ -57,7 +59,6 @@ public:
 	void decide();
 	int act();
 	void react(int agentx, int agenty, int x_dim);
-	int check();
 	void testD();
 	void testE();
 
@@ -199,6 +200,20 @@ void qlearner::testD() {
 	}
 }
 
+void testF(int gridx, int gridy, int time2[]) {
+	double avgtime = 0;
+	for (int i = 0; i < 10; i++) {
+		avgtime = avgtime + (time2[999 - i]/30);
+		//cout << avgtime << endl;
+	}
+	avgtime = avgtime / 9; 
+	//cout << "avgtime:" << avgtime << endl;
+	int max_move = (gridx-1)+(gridy-1);
+	//cout << "maxmove:" << max_move << endl;
+	assert(avgtime <= max_move);
+	
+}
+
 int main() {
 	srand(time(NULL));
 	grid G;
@@ -232,7 +247,8 @@ int main() {
 			broke = false;
 		}
 	}
-	
+	testF(G.xGS, G.yGS, time);
+
 	ofstream myfile;
 	myfile.open("learningcurve.csv");
 	myfile.clear();
