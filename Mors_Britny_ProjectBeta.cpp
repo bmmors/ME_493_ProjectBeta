@@ -1,7 +1,7 @@
 //Britny Mors
 //ME 493 - Autonomy
 //Project Beta
-//Worked with Scott Four
+//Worked with Scott Four & Bryant Clouse
 
 #include <iostream>
 #include <assert.h>
@@ -19,10 +19,10 @@ using namespace std;
 
 class grid {
 public:
-	int xGS = 10; //set x value for grid size
+	int xGS = 5; //set x value for grid size
 	int yGS = xGS; //set y value for grid size
-	int Gx = xGS-1;//rand() % xGS;
-	int Gy = yGS-1;//rand() % yGS;
+	int Gx = xGS-2;//rand() % xGS;
+	int Gy = yGS-2;//rand() % yGS;
 
 };
 
@@ -198,7 +198,7 @@ int main() {
 	A.init(G.xGS,G.yGS);
 	bool broke = false;
 	int n = 1000;
-	int run = 1;
+	int run = 30;
 	int time[1000];
 	for (int i = 0; i < n; i++) {
 		time[i] = 0;
@@ -219,20 +219,11 @@ int main() {
 			}
 			A.reset(0);
 			broke = false;
-			//cout << j << endl;
 		}
 	}
-	/*
-	cout << "Q table AFTER" << endl;
-	for (int i = 0; i < G.xGS*G.yGS; i++) {
-		for (int j = 0; j < 4; j++) {
-			cout << Q.qtable[i][j] << "\t";
-		}
-		cout << endl;
-	}
-	*/
+	
 	ofstream myfile;
-	myfile.open("Qtable.csv");
+	myfile.open("learningcurve.csv");
 	myfile.clear();
 	for (int i = 0; i < n; i++) {
 		myfile << time[i] << endl;
