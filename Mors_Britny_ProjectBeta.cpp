@@ -36,6 +36,7 @@ public:
 	void init(int xGS, int yGS);
 	void update(int move, int gridx, int gridy);
 	void reset(int check);
+	void testE();
 };
 
 class qlearner {
@@ -58,6 +59,7 @@ public:
 	void react(int agentx, int agenty, int x_dim);
 	int check();
 	void testD();
+	void testE();
 
 };
 
@@ -73,6 +75,11 @@ void agent::init(int xGS, int yGS) {
 	Ay_start = 0;//rand() % yGS;
 	ax = Ax_start;
 	ay = Ay_start;
+}
+
+void agent::testE() {
+	assert(ax == Ax_start);
+	assert(ay == Ay_start);
 }
 
 void agent::update(int move, int gridx, int gridy) {
@@ -221,6 +228,7 @@ int main() {
 				time[j]++;
 			}
 			A.reset(0);
+			A.testE();
 			broke = false;
 		}
 	}
